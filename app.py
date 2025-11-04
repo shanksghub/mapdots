@@ -31,9 +31,9 @@ df['iso_alpha'] = df['country'].apply(lambda x: get_iso_alpha(x) if pd.notna(x) 
 # Risk classification
 q1, q2, q3 = 42, 76, 140
 df['Total_Risk_Score_Severity'] = df['Total_Risk_Score'].apply(
-    lambda x: "Low" if x<q1 else "Medium" if x<q2 else "High" if x<q3 else "Very High"
+    lambda x: "Low" if x<q1 else "Medium" if x<q2 else "High" if x<q3 else "VERY High"
 )
-color_map = {"Low":"#2ca02c","Medium":"#ff7f0e","High":"#d62728","VERY High":"#9467bd"}
+color_map = {"Low":"#2ca02c","Medium":"#ff7f0e","High":"#d62728","Very High":"#9467bd"}
 
 # Severity text
 severity_cols = [
