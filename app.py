@@ -31,11 +31,11 @@ df['iso_alpha'] = df['country'].apply(lambda x: get_iso_alpha(x) if pd.notna(x) 
 # Risk classification
 q1, q2, q3 = 42, 76, 140
 df['Total_Risk_Score_Severity'] = df['Total_Risk_Score'].apply(
-    lambda x: "Low" if x<q1 else "Medium" if x<q2 else "High" if x<q3 else "VERY High"
+    lambda x: "Low" if x<q1 else "Medium" if x<q2 else "High" if x<q3 else "VERY HIGH"
 )
-color_map = {"Low":"#2ca02c","Medium":"#ff7f0e","High":"#d62728","VERY High":"#9467bd"}
+color_map = {"Low":"#2ca02c","Medium":"#ff7f0e","High":"#d62728","VERY HIGH":"#9467bd"}
 
-# Severity text
+# Hover text
 severity_cols = [
     'Accident_Severity','Active Shooter_Severity','Civil Unrest_Severity',
     'Criminal Activity_Severity','Health / Outbreak_Severity','Natural Disaster_Severity',
@@ -54,7 +54,7 @@ if 'Year' not in df.columns:
 app = dash.Dash(__name__)
 server = app.server
 
-# Animated scatter map
+# Animated scatter map with trackpad zoom enabled
 fig = px.scatter_mapbox(
     df,
     lat="Latitude",
@@ -64,22 +64,25 @@ fig = px.scatter_mapbox(
     hover_name="City",
     hover_data={"Total_Risk_Score": True, "country": True, "Year": True},
     size="Total_Risk_Score",
+    animation_frame="Year",
     zoom=1,
     height=750,
-    animation_frame="Year",
     mapbox_style="carto-darkmatter",
     title="HP Sites Global Risk Map — Animated by Year"
 )
 
-# ✅ Place these lines here
+# Enable scrollZoom and drag zoom
 fig.update_layout(
     mapbox=dict(
-        zoom=1,
         center=dict(lat=20, lon=0),
-        style="carto-darkmatter"
+        zoom=1,
+        style="carto-darkmatter",
+        # This allows pinch/trackpad zoom
+        scrollZoom=True
     ),
-    dragmode='zoom',  # enables drag zoom
+    dragmode='zoom',        # enables drag-to-zoom box
 )
+
 fig.update_traces(
     hoverinfo="text",
     marker=dict(allowoverlap=True)
