@@ -71,6 +71,21 @@ fig = px.scatter_mapbox(
     title="HP Sites Global Risk Map — Animated by Year"
 )
 
+# ✅ Place these lines here
+fig.update_layout(
+    mapbox=dict(
+        zoom=1,
+        center=dict(lat=20, lon=0),
+        style="carto-darkmatter"
+    ),
+    dragmode='zoom',  # enables drag zoom
+)
+fig.update_traces(
+    hoverinfo="text",
+    marker=dict(allowoverlap=True)
+)
+
+# Dash layout
 app.layout = html.Div([
     dcc.Graph(id='risk-map', figure=fig)
 ])
