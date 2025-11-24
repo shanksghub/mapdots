@@ -14,7 +14,9 @@ csv_path = os.path.join(os.path.dirname(__file__), "predicted_crime_corrected.cs
 df = pd.read_csv(csv_path)
 
 # ---------------- LOAD DATA ----------------
-# df = pd.read_csv("predicted_crime_corrected.csv")
+# df = pd.read_csv("predicted_crime_corrected.csv") 
+
+# ---------------- LOAD DATA ----------------
 df['Predicted_Crimes'] = pd.to_numeric(df['Predicted_Crimes'], errors='coerce')
 df = df.dropna(subset=['Predicted_Crimes', 'Crime_Type', 'Year', 'Month'])
 df['Year'] = df['Year'].astype(int)
@@ -30,17 +32,16 @@ fig_3d = px.scatter_3d(
     title='3D Visualization of Predicted Crimes',
     hover_name='Crime_Type'
 )
-fig_3d.update_layout(width=1300, height=760,legend=dict(
-        x=0.8,          # horizontal position (0=left, 1=right)
-        y=0.8,          # vertical position (0=bottom, 1=top)
-        xanchor='left', # or 'center', 'right'
-        yanchor='top',  # or 'middle', 'bottom'
-        orientation='v', # 'v' vertical, 'h' horizontal
-        bgcolor='rgba(255,255,255,0.5)', # optional background
+fig_3d.update_layout(width=1300, height=760, legend=dict(
+        x=0.8,
+        y=0.8,
+        xanchor='left',
+        yanchor='top',
+        orientation='v',
+        bgcolor='rgba(255,255,255,0.5)',
         bordercolor='black',
         borderwidth=1
     ))
-
 
 # ---------------- 2️⃣ Pie Chart for December ----------------
 df_dec = df[df['Month'] == 12]
@@ -56,7 +57,7 @@ fig_pie = px.pie(
 )
 fig_pie.update_traces(textposition='inside', textinfo='label+percent')
 
-# Dropdown for years
+# Dropdown for pie chart years
 buttons = []
 for year in years:
     filtered_df = df_grouped[df_grouped['Year'] == year]
@@ -67,34 +68,27 @@ for year in years:
                'labels': [filtered_df['Crime_Type']],
                'title': f'Crime Types {year}'}]
     ))
-#fig_pie.update_layout(updatemenus=[dict(type='dropdown', buttons=buttons, x=1.1, y=1.1)])
-#fig_pie.update_layout(
-#    updatemenus=[dict(type='dropdown', buttons=buttons, x=1.1, y=1.1)],
-#    width=1200,   # set desired width in pixels
-#    height=600   # set desired height in pixels
-#)
 
 fig_pie.update_layout(
     updatemenus=[dict(type='dropdown', buttons=buttons, x=0.9, y=1.0)],
     width=1200,
     height=600,
     legend=dict(
-        x=0.85,        # horizontal position (0=left, 1=right)
-        y=0.5,         # vertical position (0=bottom, 1=top)
-        xanchor='left',  # anchors the legend box horizontally
-        yanchor='middle', # anchors the legend box vertically
-        bgcolor='rgba(255,255,255,0.7)',  # optional background
+        x=0.85,
+        y=0.5,
+        xanchor='left',
+        yanchor='middle',
+        bgcolor='rgba(255,255,255,0.7)',
         bordercolor='black',
         borderwidth=1
     )
 )
 
-
-
 # ---------------- 3️⃣ Treemap ----------------
 df_sorted = df.sort_values(['Year', 'Month'])
 df_sorted['Year_str'] = df_sorted['Year'].astype(str)
 df_sorted['Month_str'] = df_sorted['Month'].astype(str).str.zfill(2)
+
 fig_treemap = px.treemap(
     df_sorted,
     path=['Year_str', 'Month_str', 'Crime_Type'],
@@ -105,10 +99,7 @@ fig_treemap = px.treemap(
 )
 fig_treemap.update_layout(margin=dict(t=50, l=0, r=0, b=0), coloraxis_colorbar=dict(title='Predicted Crimes'))
 
-# ---------------- 45 3d Surface  ----------------
-
-
-# Prepare grid
+# ---------------- 4️⃣ 3D Surface ----------------
 year_grid = np.linspace(df['Year'].min(), df['Year'].max(), 50)
 month_grid = np.linspace(df['Month'].min(), df['Month'].max(), 40)
 X, Y = np.meshgrid(year_grid, month_grid)
@@ -116,7 +107,6 @@ crime_types = df['Crime_Type'].unique()
 colors = px.colors.qualitative.Bold
 
 fig_surface = go.Figure()
-
 for i, crime in enumerate(crime_types):
     df_c = df[df['Crime_Type'] == crime]
     Z = griddata(
@@ -141,49 +131,23 @@ for i, crime in enumerate(crime_types):
             "<b>Predicted Crimes:</b> %{z}<extra></extra>"
         )
     ))
-
-# Camera + rotation lock
 fig_surface.update_scenes(
-    camera=dict(eye=dict(x=1.8, y=-1.0, z=1.0)),  # lower start y
+    camera=dict(eye=dict(x=1.8, y=-1.0, z=1.0)),
     dragmode='orbit',
     aspectratio=dict(x=1.4, y=1, z=0.7)
 )
-
-# Layout
-#fig_surface.update_layout(title="Crime Prediction Surfaces by Crime Type",width=1200,\
- #   height=900,legend=dict(title="Crime Types",itemsizing='constant',\
- #       bgcolor="rgba(255,255,255,0.7)",x=1.05, y=1),scene=dict(xaxis_title='Year', yaxis_title='Month',zaxis_title='Predicted Crimes'))
-
-#fig_surface.update_layout(
- #   title="Crime Prediction Surfaces by Crime Type",
-  #  width=1200,
-   # height=1100,
-   # margin=dict(l=10, r=50, t=40, b=180),  # move chart lower (higher y position visually)
-   # legend=dict(
-   #     title="Crime Types",
-   #     itemsizing='constant',
-   #     bgcolor="rgba(255,255,255,0.7)",
-   #     x=1.05,
-   #     y=1
-   # ),
-   # scene=dict(
-   #     xaxis_title='Year',
-   #     yaxis_title='Month',
-   #     zaxis_title='Predicted Crimes'
-   # )
-#)
 fig_surface.update_layout(
     title="Crime Prediction Surfaces by Crime Type",
     width=1200,
     height=1100,
-    margin=dict(l=10, r=50, t=40, b=180),  # chart lower
+    margin=dict(l=10, r=50, t=40, b=180),
     legend=dict(
         title="Crime Types",
         itemsizing='constant',
         bgcolor="rgba(255,255,255,0.7)",
         x=1.05,
-        y=0.5,           # lower y moves legend down
-        yanchor='bottom'  # y refers to bottom of legend box
+        y=0.5,
+        yanchor='bottom'
     ),
     scene=dict(
         xaxis_title='Year',
@@ -192,9 +156,8 @@ fig_surface.update_layout(
     )
 )
 
-
-# ---------------- 4️⃣ Animated December Bar Chart ----------------
-df_dec_filtered = df[df['Year'].isin(range(2025, 2046)) & (df['Month']==12)]
+# ---------------- 5️⃣ Animated December Bar Chart ----------------
+df_dec_filtered = df[df['Year'].isin(range(2025, 2046)) & (df['Month'] == 12)]
 fig_bar = px.bar(
     df_dec_filtered,
     y='Predicted_Crimes',
@@ -204,12 +167,11 @@ fig_bar = px.bar(
     title='Predicted Crimes by Crime Type (2025-2045)',
     labels={'Predicted_Crimes':'Predicted Crimes'}
 )
-
 fig_bar.update_layout(
     width=1300,
     height=700,
     legend=dict(
-        x=1.02,        # right of chart
+        x=1.02,
         y=1,
         xanchor='left',
         yanchor='top',
@@ -217,15 +179,14 @@ fig_bar.update_layout(
         bordercolor='black',
         borderwidth=1,
         traceorder='normal',
-        orientation='v',   # vertical layout
+        orientation='v',
         itemsizing='constant',
-        font=dict(size=12),
+        font=dict(size=12)
     )
 )
-
 fig_bar.update_xaxes(showticklabels=False, title_text='')
 
-# ---------------- 5️⃣ London Map ----------------
+# ---------------- 6️⃣ London Map ----------------
 df_london = df_dec_filtered.copy()
 unique_years = sorted(df_london['Year'].unique())
 LONDON = {"lat": 51.5074, "lon": -0.1278, "city": "LONDON"}
@@ -236,10 +197,17 @@ server = app.server
 
 app.layout = html.Div([
     html.H2("Crime Data Visualizations (2025-2045)", style={"textAlign":"center", "padding":"10px", "backgroundColor":"#EEE"}),
-    
+
     dcc.Tabs(id="tabs", value='tab-3d', children=[
         dcc.Tab(label='London Map', value='tab-map', children=[
-            dcc.Graph(id='crime-map'),
+            dcc.Graph(
+                id='crime-map',
+                config={
+                    "scrollZoom": True,
+                    "displayModeBar": True,
+                    "modeBarButtonsToAdd": ["zoomInMapbox", "zoomOutMapbox"]
+                }
+            ),
             html.Div([
                 html.Button(
                     "Play",
@@ -270,35 +238,24 @@ app.layout = html.Div([
             ),
             dcc.Interval(id="auto-interval", interval=1200, n_intervals=0, disabled=True),
             dcc.Interval(id="blink-interval", interval=500, n_intervals=0),
-            dcc.Store(id='current-year', data=unique_years[0])  # Store selected year
+            dcc.Store(id='current-year', data=unique_years[0])
         ]),
-        dcc.Tab(label='3D Scatter Chart', value='tab-3d', children=[
-            dcc.Graph(figure=fig_3d)
-        ]),
-        dcc.Tab(label='3D Crime Surfaces', value='tab-surface', children=[
-            dcc.Graph(figure=fig_surface)
-        ]),
-        dcc.Tab(label='Pie Chart', value='tab-pie', children=[
-            dcc.Graph(figure=fig_pie)
-        ]),
-        dcc.Tab(label='Treemap', value='tab-treemap', children=[
-            dcc.Graph(figure=fig_treemap)
-        ]),
-        dcc.Tab(label='Bar', value='tab-bar', children=[
-            dcc.Graph(figure=fig_bar)
-        ])
-        
+        dcc.Tab(label='3D Scatter Chart', value='tab-3d', children=[dcc.Graph(figure=fig_3d)]),
+        dcc.Tab(label='3D Crime Surfaces', value='tab-surface', children=[dcc.Graph(figure=fig_surface)]),
+        dcc.Tab(label='Pie Chart', value='tab-pie', children=[dcc.Graph(figure=fig_pie)]),
+        dcc.Tab(label='Treemap', value='tab-treemap', children=[dcc.Graph(figure=fig_treemap)]),
+        dcc.Tab(label='Bar', value='tab-bar', children=[dcc.Graph(figure=fig_bar)])
     ])
 ])
 
-# ---------------- CALLBACKS FOR MAP ----------------
+# ---------------- CALLBACKS ----------------
 @app.callback(
     Output("auto-interval", "disabled"),
     Input("playpause-btn", "n_clicks"),
     State("auto-interval", "disabled")
 )
 def toggle_play(n_clicks, disabled):
-    if n_clicks>0:
+    if n_clicks > 0:
         return not disabled
     return disabled
 
@@ -330,10 +287,11 @@ def advance_year(n, current, min_y, max_y):
 )
 def update_map(year, blink_n):
     opacity = 1 if blink_n % 2 == 0 else 0.15
-    year_df = df_london[df_london['Year']==year]
+    year_df = df_london[df_london['Year'] == year]
     hover = f"<b>Year:</b> {year}<br>" + "<br>".join(
         [f"<b>{r['Crime_Type']}:</b> {int(r['Predicted_Crimes'])}" for _, r in year_df.iterrows()]
     )
+
     fig = go.Figure(go.Scattermapbox(
         lat=[LONDON["lat"]],
         lon=[LONDON["lon"]],
@@ -345,21 +303,18 @@ def update_map(year, blink_n):
         hovertext=hover,
         hoverinfo="text"
     ))
+
     fig.update_layout(
-    mapbox_style="carto-darkmatter",
-    mapbox=dict(
-        center=dict(lat=LONDON["lat"], lon=LONDON["lon"]),
-        zoom=11,
-        scrollZoom=True  # <-- this works
-    ),
-    margin=dict(l=0, r=0, t=0, b=0),
-    uirevision="constant"
-)
-
+        mapbox_style="carto-darkmatter",
+        mapbox=dict(
+            center=dict(lat=LONDON["lat"], lon=LONDON["lon"]),
+            zoom=11
+        ),
+        margin=dict(l=0, r=0, t=0, b=0),
+        uirevision="constant"
+    )
     return fig
-    
-       # mapbox=dict(center=dict(lat=LONDON["lat"], lon=LONDON["lon"]), zoom=10),
 
-# ---------------- RUN ----------------
+# ---------------- RUN APP ----------------
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8029)
+    app.run(debug=True, host="0.0.0.0", port=8039)
