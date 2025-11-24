@@ -346,9 +346,14 @@ def update_map(year, blink_n):
         hoverinfo="text"
     ))
     fig.update_layout(
-        mapbox_style="carto-darkmatter",
-        margin=dict(l=0, r=0, t=0, b=0),
-        uirevision="constant")
+    mapbox_style="carto-darkmatter",
+    margin=dict(l=0,r=0,t=0,b=0),
+    uirevision="constant",
+    mapbox=dict(
+        scrollZoom=True,   # enable scroll to zoom
+        doubleClickZoom=True,
+        dragmode="pan"     # allows click-drag
+    ))
 
        # mapbox=dict(center=dict(lat=LONDON["lat"], lon=LONDON["lon"]), zoom=10),
     return fig
