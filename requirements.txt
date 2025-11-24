@@ -1,5 +1,7 @@
 dash
-pandas
 plotly
-pycountry
+pandas
+numpy
+scipy
 gunicorn
+pycountry
