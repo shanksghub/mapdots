@@ -354,7 +354,6 @@ def update_map(year, blink_n):
     return fig
     
        # mapbox=dict(center=dict(lat=LONDON["lat"], lon=LONDON["lon"]), zoom=10),
-    return fig
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
