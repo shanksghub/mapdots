@@ -347,9 +347,10 @@ def update_map(year, blink_n):
     ))
     fig.update_layout(
         mapbox_style="carto-darkmatter",
-        mapbox=dict(center=dict(lat=LONDON["lat"], lon=LONDON["lon"]), zoom=10),
-        margin=dict(l=0,r=0,t=0,b=0)
-    )
+        margin=dict(l=0, r=0, t=0, b=0),
+        uirevision="constant")
+
+       # mapbox=dict(center=dict(lat=LONDON["lat"], lon=LONDON["lon"]), zoom=10),
     return fig
 
 # ---------------- RUN ----------------
