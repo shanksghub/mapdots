@@ -347,13 +347,17 @@ def update_map(year, blink_n):
     ))
     fig.update_layout(
     mapbox_style="carto-darkmatter",
-    margin=dict(l=0,r=0,t=0,b=0),
+    margin=dict(l=0, r=0, t=0, b=0),
     uirevision="constant",
     mapbox=dict(
-        scrollZoom=True,   # enable scroll to zoom
-        doubleClickZoom=True,
-        dragmode="pan"     # allows click-drag
-    ))
+        center=dict(lat=LONDON["lat"], lon=LONDON["lon"]),
+        zoom=11
+    ),
+    scrollZoom=True,        # OUTSIDE mapbox
+    dragmode="pan",         # OUTSIDE mapbox
+    doubleClickZoom=True    # OUTSIDE mapbox
+)
+
 
        # mapbox=dict(center=dict(lat=LONDON["lat"], lon=LONDON["lon"]), zoom=10),
     return fig
